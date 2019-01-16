@@ -1,4 +1,4 @@
-package com.example.amin.criminalintent;
+package com.example.amin.criminalintent.controller;
 
 
 import android.app.Activity;
@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.example.amin.criminalintent.R;
 import com.example.amin.criminalintent.models.Crime;
 import com.example.amin.criminalintent.models.CrimeLab;
 import com.example.amin.criminalintent.utils.PictureUtils;
@@ -97,43 +98,58 @@ public class CrimeDetailFragment extends Fragment {
         mPhotoButton = view.findViewById(R.id.crime_camera);
         mPhotoView = view.findViewById(R.id.crime_photo);
 
-        mTitleField.setText(mCrime.getTitle());
-        mTitleField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        handleTitleTextField();
+        handleSolvedCheckbox();
+        handleDateButton();
+        handleSuspectButton();
+        handleReportButton();
+        handlePhotoButton();
 
-            }
+        updatePhotoView();
+        return view;
+    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCrime.setTitle(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        mSolvedCheckBox.setChecked(mCrime.isSolved());
-        mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCrime.setSolved(isChecked);
-            }
-        });
-
-        mDateButton.setText(mCrime.getDate().toString());
-        mDateButton.setOnClickListener(new View.OnClickListener() {
+    private void handlePhotoButton() {
+        mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getDate());
-                datePickerFragment.setTargetFragment(CrimeDetailFragment.this,
-                        REQ_DATE_PICKER);
-                datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
+                Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                Uri uri = getPhotoFileUri();
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                PackageManager packageManager = getActivity().getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(
+                        captureIntent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo activity : activities) {
+                    getActivity().grantUriPermission(
+                            activity.activityInfo.packageName,
+                            uri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+
+                startActivityForResult(captureIntent, REQ_PHOTOS);
             }
         });
+    }
 
+    private void handleReportButton() {
+        mReportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent reportIntent = new Intent(Intent.ACTION_SEND);
+                reportIntent.setType("text/plain");
+                reportIntent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                reportIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+
+                startActivity(Intent.createChooser(reportIntent, getString(R.string.send_report)));
+            }
+        });
+    }
+
+    private void handleSuspectButton() {
         final Intent chooseContact = new Intent(Intent.ACTION_PICK);
         chooseContact.setType(ContactsContract.Contacts.CONTENT_TYPE);
 
@@ -152,44 +168,49 @@ public class CrimeDetailFragment extends Fragment {
         if (mCrime.getSuspect() != null) {
             mSuspectButton.setText(mCrime.getSuspect());
         }
+    }
 
-        mReportButton.setOnClickListener(new View.OnClickListener() {
+    private void handleDateButton() {
+        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent reportIntent = new Intent(Intent.ACTION_SEND);
-                reportIntent.setType("text/plain");
-                reportIntent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
-                reportIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
-
-                startActivity(Intent.createChooser(reportIntent, getString(R.string.send_report)));
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getDate());
+                datePickerFragment.setTargetFragment(CrimeDetailFragment.this,
+                        REQ_DATE_PICKER);
+                datePickerFragment.show(getFragmentManager(), DIALOG_TAG);
             }
         });
+    }
 
-        mPhotoButton.setOnClickListener(new View.OnClickListener() {
+    private void handleSolvedCheckbox() {
+        mSolvedCheckBox.setChecked(mCrime.isSolved());
+        mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                Uri uri = getPhotoFileUri();
-                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-
-                List<ResolveInfo> activities = packageManager.queryIntentActivities(
-                        captureIntent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
-
-                for (ResolveInfo activity : activities) {
-                    getActivity().grantUriPermission(
-                            activity.activityInfo.packageName,
-                            uri,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
-
-                startActivityForResult(captureIntent, REQ_PHOTOS);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mCrime.setSolved(isChecked);
             }
         });
+    }
 
-        updatePhotoView();
-        return view;
+    private void handleTitleTextField() {
+        mTitleField.setText(mCrime.getTitle());
+        mTitleField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mCrime.setTitle(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private Uri getPhotoFileUri() {

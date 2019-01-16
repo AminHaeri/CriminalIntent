@@ -1,4 +1,4 @@
-package com.example.amin.criminalintent;
+package com.example.amin.criminalintent.controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
+import com.example.amin.criminalintent.R;
 import com.example.amin.criminalintent.models.Crime;
 import com.example.amin.criminalintent.models.CrimeLab;
 

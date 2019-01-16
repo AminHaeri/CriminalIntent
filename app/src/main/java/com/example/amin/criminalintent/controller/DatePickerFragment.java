@@ -1,4 +1,4 @@
-package com.example.amin.criminalintent;
+package com.example.amin.criminalintent.controller;
 
 
 import android.app.Activity;
@@ -6,15 +6,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
+
+import com.example.amin.criminalintent.R;
 
 import java.util.Calendar;
 import java.util.Date;

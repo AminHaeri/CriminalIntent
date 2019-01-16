@@ -1,9 +1,11 @@
-package com.example.amin.criminalintent;
+package com.example.amin.criminalintent.controller;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+
+import com.example.amin.criminalintent.R;
 
 /**
  * All activities that host one fragment must extend this class

@@ -1,4 +1,4 @@
-package com.example.amin.criminalintent;
+package com.example.amin.criminalintent.controller;
 
 
 import android.content.Intent;
@@ -17,12 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.amin.criminalintent.R;
 import com.example.amin.criminalintent.models.Crime;
 import com.example.amin.criminalintent.models.CrimeLab;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
