@@ -9,6 +9,7 @@ import com.example.amin.criminalintent.database.CrimeBaseHelper;
 import com.example.amin.criminalintent.database.CrimeCursorWrapper;
 import com.example.amin.criminalintent.database.CrimeDbSchema;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -102,4 +103,22 @@ public class CrimeLab {
 
         return values;
     }
+
+    public File getPhotoFile(Crime crime) {
+        File filesDir = mContext.getFilesDir();
+        File photoFile = new File(filesDir, crime.getPhotoName());
+
+        return photoFile;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+

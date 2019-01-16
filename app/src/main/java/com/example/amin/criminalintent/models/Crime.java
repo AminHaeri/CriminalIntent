@@ -56,4 +56,8 @@ public class Crime {
         mId = id;
         mDate = RandomData.randomDate();
     }
+
+    public String getPhotoName() {
+        return "IMG_" + mId.toString() + ".jpg";
+    }
 }

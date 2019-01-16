@@ -17,7 +17,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".CrimePagerActivity"
-            android:parentActivityName=".CrimeListActivity"></activity>
+            android:parentActivityName=".CrimeListActivity"
+            android:exported="false"></activity>
+        
+        <provider
+            android:authorities="com.example.amin.criminalintent.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files">
+            </meta-data>
+        </provider>
+
     </application>
 
 </manifest>
