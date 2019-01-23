@@ -189,6 +189,7 @@ public class CrimeDetailFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                onCrimeUpdate(mCrime);
             }
         });
     }
@@ -204,6 +205,7 @@ public class CrimeDetailFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                onCrimeUpdate(mCrime);
             }
 
             @Override
@@ -236,6 +238,7 @@ public class CrimeDetailFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             mDateButton.setText(date.toString());
+            onCrimeUpdate(mCrime);
         } else if (requestCode == REQ_CONTACT) {
             Uri contactUri = data.getData();
 
@@ -255,6 +258,7 @@ public class CrimeDetailFragment extends Fragment {
 
                 mCrime.setSuspect(suspectName);
                 mSuspectButton.setText(suspectName);
+                onCrimeUpdate(mCrime);
             } finally {
                 cursor.close();
             }
@@ -290,6 +294,14 @@ public class CrimeDetailFragment extends Fragment {
 
             mPhotoView.setImageBitmap(bitmap);
         }
+    }
+
+    private void onCrimeUpdate(Crime crime) {
+        CrimeLab.getInstance(getActivity()).update(mCrime);
+
+        CrimeListFragment crimeListFragment = (CrimeListFragment)
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_list_container);
+        crimeListFragment.updateUI();
     }
 }
 

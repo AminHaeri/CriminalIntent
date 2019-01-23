@@ -1,9 +1,11 @@
 package com.example.amin.criminalintent.controller;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 
 import com.example.amin.criminalintent.R;
 
@@ -14,16 +16,19 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     public abstract Fragment createFragment();
 
+    @LayoutRes
+    public abstract int getLayoutResId();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment);
+        setContentView(getLayoutResId());
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
+        if (fragmentManager.findFragmentById(R.id.fragment_list_container) == null) {
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, createFragment())
+                    .add(R.id.fragment_list_container, createFragment())
                     .commit();
         }
     }

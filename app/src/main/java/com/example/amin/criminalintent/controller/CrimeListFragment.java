@@ -87,8 +87,8 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 Crime crime = new Crime();
                 CrimeLab.getInstance(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                crimeCreated(crime);
+                updateUI();
                 return true;
             case R.id.show_subtitle:
                 mIsSubtitleVisible = !mIsSubtitleVisible;
@@ -97,6 +97,21 @@ public class CrimeListFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void crimeCreated(Crime crime) {
+        if (getActivity().findViewById(R.id.fragment_detail_container) == null) {
+            //Phone
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+            startActivity(intent);
+        } else {
+            //Tablet
+            CrimeDetailFragment crimeDetailFragment = CrimeDetailFragment.newInstance(crime.getId());
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_detail_container, crimeDetailFragment)
+                    .commit();
         }
     }
 
@@ -119,7 +134,7 @@ public class CrimeListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
         if (mCrimeAdapter == null) {
@@ -150,8 +165,7 @@ public class CrimeListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 //                    Toast.makeText(getActivity(), mCrime.getTitle() + " clicked!", Toast.LENGTH_LONG).show();
-                    Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-                    startActivity(intent);
+                    crimeCreated(mCrime);
                 }
             });
         }
