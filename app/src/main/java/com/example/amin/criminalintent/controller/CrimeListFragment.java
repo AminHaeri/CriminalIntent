@@ -1,6 +1,7 @@
 package com.example.amin.criminalintent.controller;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,9 +37,31 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mCrimeAdapter;
 
     private boolean mIsSubtitleVisible;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+    }
 
     public CrimeListFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Callbacks)
+            mCallbacks = (Callbacks) context;
+        else
+            throw new RuntimeException("Callbacks not impl");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mCallbacks = null;
     }
 
     @Override
@@ -87,8 +110,9 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 Crime crime = new Crime();
                 CrimeLab.getInstance(getActivity()).addCrime(crime);
-                crimeCreated(crime);
+                mCallbacks.onCrimeSelected(crime);
                 updateUI();
+                updateSubtitle();
                 return true;
             case R.id.show_subtitle:
                 mIsSubtitleVisible = !mIsSubtitleVisible;
@@ -97,21 +121,6 @@ public class CrimeListFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void crimeCreated(Crime crime) {
-        if (getActivity().findViewById(R.id.fragment_detail_container) == null) {
-            //Phone
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-            startActivity(intent);
-        } else {
-            //Tablet
-            CrimeDetailFragment crimeDetailFragment = CrimeDetailFragment.newInstance(crime.getId());
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_detail_container, crimeDetailFragment)
-                    .commit();
         }
     }
 
@@ -164,8 +173,7 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    Toast.makeText(getActivity(), mCrime.getTitle() + " clicked!", Toast.LENGTH_LONG).show();
-                    crimeCreated(mCrime);
+                    mCallbacks.onCrimeSelected(mCrime);
                 }
             });
         }

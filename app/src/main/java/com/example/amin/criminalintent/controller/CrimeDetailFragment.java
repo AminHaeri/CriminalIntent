@@ -2,6 +2,7 @@ package com.example.amin.criminalintent.controller;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -61,6 +62,11 @@ public class CrimeDetailFragment extends Fragment {
     private ImageButton mPhotoButton;
 
     private File mPhotoFile;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks{
+        void onCrimeUpdated(Crime crime);
+    }
 
     public static CrimeDetailFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -73,6 +79,23 @@ public class CrimeDetailFragment extends Fragment {
 
     public CrimeDetailFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Callbacks) {
+            mCallbacks = (Callbacks) context;
+        } else {
+            throw new RuntimeException("Activity not impl callback");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -189,7 +212,7 @@ public class CrimeDetailFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
-                onCrimeUpdate(mCrime);
+                updateCrime();
             }
         });
     }
@@ -205,7 +228,7 @@ public class CrimeDetailFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
-                onCrimeUpdate(mCrime);
+                updateCrime();
             }
 
             @Override
@@ -238,7 +261,7 @@ public class CrimeDetailFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             mDateButton.setText(date.toString());
-            onCrimeUpdate(mCrime);
+            updateCrime();
         } else if (requestCode == REQ_CONTACT) {
             Uri contactUri = data.getData();
 
@@ -258,7 +281,7 @@ public class CrimeDetailFragment extends Fragment {
 
                 mCrime.setSuspect(suspectName);
                 mSuspectButton.setText(suspectName);
-                onCrimeUpdate(mCrime);
+                updateCrime();
             } finally {
                 cursor.close();
             }
@@ -296,12 +319,9 @@ public class CrimeDetailFragment extends Fragment {
         }
     }
 
-    private void onCrimeUpdate(Crime crime) {
+    private void updateCrime() {
         CrimeLab.getInstance(getActivity()).update(mCrime);
-
-        CrimeListFragment crimeListFragment = (CrimeListFragment)
-                getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_list_container);
-        crimeListFragment.updateUI();
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 }
 

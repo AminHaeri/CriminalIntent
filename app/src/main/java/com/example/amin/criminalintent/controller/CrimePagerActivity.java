@@ -15,7 +15,7 @@ import com.example.amin.criminalintent.models.CrimeLab;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeDetailFragment.Callbacks {
 
     private static final String EXTRA_CRIME_ID = "com.example.amin.criminalintent.crime_id";
     private static final String TAG = "CrimePagerActivity";
@@ -59,5 +59,10 @@ public class CrimePagerActivity extends AppCompatActivity {
         }
 
         mViewPager.setOffscreenPageLimit(5);
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        //nothing
     }
 }
